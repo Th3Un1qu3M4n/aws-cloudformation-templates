@@ -1,0 +1,34 @@
+MyRepo:
+  Type: AWS::CodeCommit::Repository
+  Properties:
+    RepositoryName: express-app
+    RepositoryDescription: simple express app to check health point
+
+ArtifactBucket:
+  Type: AWS::S3::Bucket
+  Properties:
+    BucketName: cc-cb-cd-ec2
+
+MyPipeline:
+  Type: AWS::CodePipeline::Pipeline
+  Properties:
+    Name: ec2-ci-cd-pipeline
+    ArtifactStore: 
+      Type: S3
+      Location: !Ref ArtifactBucket
+    Stages: 
+      - Name: Source
+        Actions: 
+          Name: SourceAction
+          ActionTypeId:
+            Category: Source
+            Owner: AWS
+            Version: 1
+            Provider: CodeCommit
+          OutputArtifacts:
+            - Name: SourceOutput
+          Configuration:
+            S3Bucket:
+              Ref: ArtifactBucket
+            S3ObjectKey:
+              Ref: SourceS3ObjectKet
