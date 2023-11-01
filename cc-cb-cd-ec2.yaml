@@ -4,6 +4,12 @@ MyRepo:
     RepositoryName: express-app
     RepositoryDescription: simple express app to check health point
 
+MyEC2Instance:
+  Type: AWS::EC2::Instance
+  Properties:
+    InstanceType: t2.micro
+    ImageId: ami-0c55b159cbfafe1f0
+
 ArtifactBucket:
   Type: AWS::S3::Bucket
   Properties:
@@ -31,4 +37,38 @@ MyPipeline:
             S3Bucket:
               Ref: ArtifactBucket
             S3ObjectKey:
-              Ref: SourceS3ObjectKet
+              Ref: SourceArtifacts
+      - Name: Build
+        Actions: 
+          Name: BuildAction
+          InputArtifacts:
+            - Name: SourceOutput
+          ActionTypeId:
+            Category: Build
+            Owner: AWS
+            Version: 1
+            Provider: CodeBuild
+          OutputArtifacts:
+            - Name: BuildOutput
+          Configuration:
+            S3Bucket:
+              Ref: ArtifactBucket
+            S3ObjectKey:
+              Ref: BuildArtifacts
+      - Name: Deploy
+        Actions: 
+          Name: DeployAction
+          InputArtifacts:
+            - Name: BuildOutput
+          ActionTypeId:
+            Category: Deploy
+            Owner: AWS
+            Version: 1
+            Provider: CodeDeploy
+          OutputArtifacts:
+            - Name: DeployOutput
+          Configuration:
+            S3Bucket:
+              Ref: ArtifactBucket
+            S3ObjectKey:
+              Ref: DeployArtifacts
