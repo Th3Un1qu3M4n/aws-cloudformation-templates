@@ -15,6 +15,30 @@ ArtifactBucket:
   Properties:
     BucketName: cc-cb-cd-ec2
 
+MyCodeBuildProject:
+  Type: AWS::CodeBuild::Project
+  Properties:
+    Artifacts:
+      Type: CODEPIPELINE
+    Source:
+      Type: CODEPIPELINE
+    Environment: 
+      ComputeType: BUILD_GENERAL1_SMALL
+      Image: aws/codebuild/amazonlinux2-x86_64-standard:4.0
+      Type: ARM_CONTAINER
+  
+MyCodeDeployApp:
+  Type: AWS::CodeDeploy::Application
+  Properties:
+    ApplicationName: NodejsApp
+    ComputePlatform: Server
+
+MyCodeDeployGroup:
+  Type: AWS::CodeDeploy:DeploymentGroup
+  Properties:
+    ApplicationName: !Ref MyCodeDeployApp
+    
+
 MyPipeline:
   Type: AWS::CodePipeline::Pipeline
   Properties:
