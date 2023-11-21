@@ -9,6 +9,9 @@ MyEC2Instance:
   Properties:
     InstanceType: t2.micro
     ImageId: ami-0c55b159cbfafe1f0
+    Tags:
+      - Key: "Pipeline"
+        Value: "Dev"
 
 ArtifactBucket:
   Type: AWS::S3::Bucket
@@ -37,6 +40,10 @@ MyCodeDeployGroup:
   Type: AWS::CodeDeploy:DeploymentGroup
   Properties:
     ApplicationName: !Ref MyCodeDeployApp
+    DeploymentConfigName: CodeDeployDefault.AllAtOnce
+    Ec2TagFilters: 
+      Key: "Pipeline"
+      Type: KEY_ONLY
     
 
 MyPipeline:
